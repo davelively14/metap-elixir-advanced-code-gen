@@ -24,6 +24,21 @@ defmodule Translator do
   end
 
   def compile(translations) do
-    # TBD: Return AST for all translation function definitions
+    translations_ast =
+      # Map locales to locale and mappings
+      for {locale, mappings} <- translations do
+        deftranslations(locale, "", mappings)
+      end
+
+    quote do
+      # I have no idea what the t function does yet
+      def t(locale, path, bindings \\ [])
+      unquote(translations_ast)
+      def t(_locale, _path, _bindings), do: {:error, :no_translation}
+    end
+  end
+
+  defp deftranslations(locale, current_path, mappings) do
+    # TBD: Return an AST of the t/3 function defs for the given locale
   end
 end
