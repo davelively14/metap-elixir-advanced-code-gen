@@ -39,6 +39,24 @@ defmodule Translator do
   end
 
   defp deftranslations(locale, current_path, mappings) do
-    # TBD: Return an AST of the t/3 function defs for the given locale
+    for {key, val} <- mappings do
+      path = append_path(current_path, key)
+      if Keyword.keyword?(val) do
+        deftranslations(locale, path, val)
+      else
+        quote do
+          def t(unquote(locale), unquote(path), bindings) do
+            unquote(interpolate(val))
+          end
+        end
+      end
+    end
   end
+
+  defp interpolate(string) do
+    string # TBD interpolate bindings with string
+  end
+
+  defp append_path("", next), do: to_string(next)
+  defp append_path(current, next), do: "#{current}.#{next}"
 end
