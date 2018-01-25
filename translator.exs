@@ -51,11 +51,15 @@ defmodule Translator do
       path = append_path(current_path, key)
 
       # Check to see if it is a keyword list, which indicates a nested list of
-      # translation mappings.
+      # translation mappings. Recursively call deftranslations until we
+      # encounter a astring translation.
       if Keyword.keyword?(val) do
         deftranslations(locale, path, val)
       else
         quote do
+          # Generate the t/3 function for each string and inject the corect
+          # path (i.e. "flash.hello"). These functions will be created in the
+          # module that uses Translator.
           def t(unquote(locale), unquote(path), bindings) do
             unquote(interpolate(val))
           end
