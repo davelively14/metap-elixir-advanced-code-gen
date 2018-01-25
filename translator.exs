@@ -39,8 +39,19 @@ defmodule Translator do
   end
 
   defp deftranslations(locale, current_path, mappings) do
+    # Map over translation key value pairs. Example:
+    # flash: [
+    #   hello: "Hello %{first} %{last}!",
+    #   bye: "Bye, %{name}!"
+    # ],
     for {key, val} <- mappings do
+      # key: flash
+      # val: [hello: "Hello %{first} %{last}!", bye: "Bye, %{name}!"]
+
       path = append_path(current_path, key)
+
+      # Check to see if it is a keyword list, which indicates a nested list of
+      # translation mappings.
       if Keyword.keyword?(val) do
         deftranslations(locale, path, val)
       else
